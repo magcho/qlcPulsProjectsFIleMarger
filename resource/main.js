@@ -2,6 +2,8 @@
 let domA;
 let domB;
 let mergedDom;
+let dataNameA = 'dataNmaeA';
+let dataNameB = 'dataNmaeB';
 function putText(v){
   document.getElementById("text").value += "\n" + v;
 }
@@ -98,6 +100,10 @@ function checkFixture(domA,domB){
 function mergeDom(domA, domB){
   if(domA === undefined || domB === undefined) return false;
 
+  // ファンクションをフォルダに内包
+  domA = intoFolder(domA, dataNameA);
+  domB = intoFolder(domB, dataNameB);
+
   funcDataA = domA.querySelectorAll("Engine > Function");
   funcDataB = domB.querySelectorAll("Engine > Function");
 
@@ -120,7 +126,9 @@ function mergeDom(domA, domB){
   }
 
 
+
   for (let i = 0; i < funcCountB;i++){
+    // 共通
     funcDataB.item(i).setAttribute("ID", Number(funcDataB.item(i).getAttribute("ID"))+ bias);
 
     switch (funcDataB.item(i).getAttribute("Type")) {
@@ -157,4 +165,26 @@ function mergeDom(domA, domB){
     domA.querySelector('Engine').appendChild(funcDataB.item(i));
   }
   return domA;
+}
+
+
+/**
+ * dom内のファンクションをQLCのフォルダに内包する
+ * @method intoFolder
+ * @param  {XML_DOM}   dom        [description]
+ * @param  {String}   folderName [description]
+ * @return {XML_DOM}              [description]
+ */
+function intoFolder(dom,folderName){
+  const funcNum = dom.querySelectorAll("Engine > Function").length;
+  for (let i = 0;i < funcNum; i++){
+    if(dom.querySelectorAll('Engine > Function').item(i).getAttribute("Path") !== null){
+      // フォルダに内包されている
+      dom.querySelectorAll('Engine > Function').item(i).setAttribute("Path", folderName + "/" + dom.querySelectorAll('Engine > Function').item(i).getAttribute("Path"));
+    }else{
+      // フォルダに属さない
+      dom.querySelectorAll('Engine > Function').item(i).setAttribute("Path", folderName);
+    }
+  }
+  return dom;
 }
