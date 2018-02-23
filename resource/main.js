@@ -101,33 +101,39 @@ function mergeDom(domA, domB){
   funcDataA = domA.querySelectorAll("Engine > Function");
   funcDataB = domB.querySelectorAll("Engine > Function");
 
+  // データに内包しているファンクション数
   const funcCountA = domA.querySelectorAll("Engine > Function").length;
   const funcCountB = domB.querySelectorAll("Engine > Function").length;
 
   // domAにdomBを追加するイメージ(domAはそのままいじらない)
-  // バイアスはfuncCountA
+  // バイアスはdomAの最後のfunctionID、ファンクション削除してもNoの連番は振り直しにならないので、最後のノードに当てられたNo.を取得する必要がある
+  if (domA.querySelector("Engine").lastElementChild.tagName == "Monitor"){
+    domA.querySelector("Engine").lastElementChild.remove();
+    // Monitorを設定している場合はマージには必要ないので削除
+  }
+  let bias = Number(domA.querySelector("Engine").lastElementChild.getAttribute('ID')) + 1;
 
   // Showの孫ノード
   let len = domB.querySelectorAll('Engine > Function > Track > ShowFunction').length;
   for (let i = 0; i < len; i++){
-    domB.querySelectorAll('Engine > Function > Track > ShowFunction').item(i).setAttribute('ID', Number(domB.querySelectorAll('Engine > Function > Track > ShowFunction').item(i).getAttribute("ID"))+ funcCountA)
+    domB.querySelectorAll('Engine > Function > Track > ShowFunction').item(i).setAttribute('ID', Number(domB.querySelectorAll('Engine > Function > Track > ShowFunction').item(i).getAttribute("ID"))+ bias)
   }
 
 
   for (let i = 0; i < funcCountB;i++){
-    funcDataB.item(i).setAttribute("ID", Number(funcDataB.item(i).getAttribute("ID"))+ funcCountA);
+    funcDataB.item(i).setAttribute("ID", Number(funcDataB.item(i).getAttribute("ID"))+ bias);
 
     switch (funcDataB.item(i).getAttribute("Type")) {
       case 'Chaser':
       case 'Collection':
         const stepCount = funcDataB.item(i).getElementsByTagName("Step").length;
         for(let j = 0; j < stepCount; j++){
-          funcDataB.item(i).getElementsByTagName("Step").item(j).textContent = Number(funcDataB.item(i).getElementsByTagName("Step").item(j).textContent) + funcCountA;
+          funcDataB.item(i).getElementsByTagName("Step").item(j).textContent = Number(funcDataB.item(i).getElementsByTagName("Step").item(j).textContent) + bias;
         }
         break;
 
       case 'Sequence':
-        funcDataB.item(i).setAttribute("BoundScene", Number(funcDataB.item(i).getAttribute("BoundScene"))+ funcCountA);
+        funcDataB.item(i).setAttribute("BoundScene", Number(funcDataB.item(i).getAttribute("BoundScene"))+ bias);
         break;
 
       case 'Script':
@@ -136,9 +142,9 @@ function mergeDom(domA, domB){
           let textContent = funcDataB.item(i).getElementsByTagName("Command").item(j).textContent;
           let tmp = {};
           if(textContent.indexOf("startfunction") === 0){
-            tmp = ["startfunction%3A",funcDataB.item(i).getElementsByTagName("Command").item(j).textContent = Number(textContent.slice(textContent.indexOf('%3A')+3,textContent.length-10)) + funcCountA];
+            tmp = ["startfunction%3A",funcDataB.item(i).getElementsByTagName("Command").item(j).textContent = Number(textContent.slice(textContent.indexOf('%3A')+3,textContent.length-10)) + bias];
           }else if (textContent.indexOf("stopfunction") === 0) {
-            tmp = ["stopfunction%3A",funcDataB.item(i).getElementsByTagName("Command").item(j).textContent = Number(textContent.slice(textContent.indexOf('%3A')+3,textContent.length-10)) + funcCountA];
+            tmp = ["stopfunction%3A",funcDataB.item(i).getElementsByTagName("Command").item(j).textContent = Number(textContent.slice(textContent.indexOf('%3A')+3,textContent.length-10)) + bias];
           }
           funcDataB.item(i).getElementsByTagName("Command").item(j).textContent = tmp.join('');
         }
