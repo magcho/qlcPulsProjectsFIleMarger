@@ -78,13 +78,17 @@ function checkFixture(domA,domB){
   // フィクスチャー登録数チェック
   if(fixtureDataA.length !== fixtureDataB.length) return false;
 
+  let nameFlag = false;
   const n = fixtureDataA.length;
   for (let i = 0; i < n; i++){
     const m = fixtureDataA.item(i).childElementCount;
     for (let j = 0; j < m; j++){
       if(fixtureDataA.item(i).children[j].tagName !== fixtureDataB.item(i).children[j].tagName && fixtureDataA.item(i).children[j].textContent !== fixtureDataB.item(i).children[j].textContent){
+        if(fixtureDataA.item(i).children[j].tagName !== "Name"){ // 名前だけは違ってもいいや
           return false;
         }
+        console.log('フィクスチャーにつけた名前が異なるものがあります');
+      }
     }
   }
   return true;
