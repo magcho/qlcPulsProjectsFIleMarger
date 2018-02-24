@@ -83,8 +83,8 @@ function checkFixture(domA,domB){
     const m = fixtureDataA.item(i).childElementCount;
     for (let j = 0; j < m; j++){
       if(fixtureDataA.item(i).children[j].tagName !== fixtureDataB.item(i).children[j].tagName && fixtureDataA.item(i).children[j].textContent !== fixtureDataB.item(i).children[j].textContent){
-        return false;
-      }
+          return false;
+        }
     }
   }
   return true;
@@ -124,7 +124,12 @@ function mergeDom(domA, domB){
   for (let i = 0; i < len; i++){
     domB.querySelectorAll('Engine > Function > Track > ShowFunction').item(i).setAttribute('ID', Number(domB.querySelectorAll('Engine > Function > Track > ShowFunction').item(i).getAttribute("ID"))+ bias)
   }
-
+  len = domB.querySelectorAll('Engine > Function > Track').length;
+  for (let i = 0; i < len; i++){
+    if(domB.querySelectorAll('Engine > Function > Track').item(i).getAttribute('SceneID') !== null){
+      domB.querySelectorAll('Engine > Function > Track').item(i).setAttribute('SceneID', Number(domB.querySelectorAll('Engine > Function > Track').item(i).getAttribute("SceneID"))+ bias)
+    }
+  }
 
 
   for (let i = 0; i < funcCountB;i++){
